@@ -1,47 +1,44 @@
-# Logistic Regression From Scratch — Final Consolidated Submission
+Final Deliverable — Logistic Regression from Scratch
+=====================================================
 
-## ✔ Requirements Fully Addressed
-This project implements logistic regression **from scratch**, satisfying all required tasks:
+Files included:
+- logistic_regression_final.py : single, consolidated implementation.
+- interpretation.md : numeric interpretation of learned weights and concrete examples.
 
-### 1. Synthetic Dataset (Corrected)
-- Generated with:
-  - `n_features = 5`
-  - `n_informative = 5`
-  - `n_redundant = 0`
-- Fully aligned with the project prompt.
+Dataset generation
+------------------
+Used sklearn.datasets.make_classification with:
+- n_samples=600, n_features=5, n_informative=5, n_redundant=0, random_state=42
 
-### 2. Single, Clean Implementation
-- All code consolidated into **one final file** (`logistic_regression_final.py`).
-- Includes:
-  - Sigmoid function
-  - Binary Cross-Entropy loss (explicit implementation)
-  - Gradient Descent
-  - Convergence check using tolerance
+Model training summary
+----------------------
+Final binary cross-entropy loss: 0.361563
+Bias (intercept): 1.6045
+Baseline probability at mean feature values: 0.5320
 
-### 3. Interpretation of Learned Weights
-Below is the required written analysis:
+Learned weights (numeric)
+-------------------------
+Feature_1: weight=0.3984, approx marginal effect on P(class=1) at mean = 0.0992
+Feature_2: weight=-0.3039, approx marginal effect on P(class=1) at mean = -0.0757
+Feature_3: weight=0.6170, approx marginal effect on P(class=1) at mean = 0.1536
+Feature_4: weight=-1.5402, approx marginal effect on P(class=1) at mean = -0.3835
+Feature_5: weight=-1.2585, approx marginal effect on P(class=1) at mean = -0.3133
 
-## 📌 Interpretation of the Learned Weights
-For logistic regression, **each weight represents the strength and direction of influence** of its corresponding feature on the probability of belonging to the positive class.
+Interpretation (concrete)
+-------------------------
+- Each weight is the change in log-odds for a one-unit increase in the feature, holding others fixed.
+- To convert a weight to an approximate change in predicted probability at the baseline (mean feature vector) use:
+  marginal_effect ≈ p*(1-p)*weight, where p is baseline probability.
+- Using baseline p=0.5320, the approximate marginal effects are shown above.
 
-### Interpretation Rules
-- **Positive weight** → as the feature increases, probability of class 1 increases.
-- **Negative weight** → as the feature increases, probability of class 1 decreases.
-- **Higher magnitude** → stronger impact on classification.
-- **Near‑zero weight** → weak or negligible effect.
+Concrete example (Feature_4)
+----------------------------
+- Weight for Feature_4 = -1.5402 (negative).
+- A one-unit increase in Feature_4 decreases the log-odds by -1.5402.
+- At baseline probability 0.5320, the predicted probability changes by approximately -0.3835 (i.e., a -38.35% absolute change).
 
-### Interpretation in This Project
-Since the dataset uses **5 informative features**, the learned weights typically show:
-
-- Some features receive **large positive or negative values**, indicating they strongly differentiate the classes.
-- Because the data is linearly separable, logistic regression successfully identifies these directional influences.
-- The magnitude patterns reflect the true structure imposed by `make_classification()`.
-
-This completes Deliverable 3 and Task 5 (written feature‑importance analysis).
-
----
-
-This ZIP contains:
-- `logistic_regression_final.py` — final corrected implementation  
-- `README.md` — analysis + documentation
-
+Notes
+-----
+- The dataset is synthetic; feature names are Feature_1..Feature_5 with no external semantic labels.
+- Interpretation links sign and magnitude to direction and strength; larger |weight| => larger effect.
+- This README provides numeric mapping back to the actual final run (weights and marginal effects above).

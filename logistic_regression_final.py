@@ -1,8 +1,16 @@
+
+"""
+Final consolidated logistic regression implementation.
+
+- Uses sklearn.datasets.make_classification with n_features=5, n_informative=5
+- Implements sigmoid, binary cross-entropy, gradient descent, and convergence check
+- Prints learned weights and accuracy
+"""
 import numpy as np
 from sklearn.datasets import make_classification
 
 class LogisticRegressionScratch:
-    def __init__(self, lr=0.01, epochs=6000, tol=1e-6):
+    def __init__(self, lr=0.05, epochs=8000, tol=1e-6):
         self.lr = lr
         self.epochs = epochs
         self.tol = tol
@@ -12,35 +20,31 @@ class LogisticRegressionScratch:
 
     def binary_cross_entropy(self, y, y_pred):
         eps = 1e-9
-        return -np.mean(y*np.log(y_pred + eps) + (1-y)*np.log(1-y_pred + eps))
+        return -np.mean(y*np.log(y_pred+eps) + (1-y)*np.log(1-y_pred+eps))
 
     def fit(self, X, y):
-        self.m, self.n = X.shape
-        self.weights = np.zeros(self.n)
-        self.bias = 0
+        m, n = X.shape
+        self.weights = np.zeros(n)
+        self.bias = 0.0
         prev_loss = float('inf')
 
         for _ in range(self.epochs):
-            linear = np.dot(X, self.weights) + self.bias
+            linear = X @ self.weights + self.bias
             y_pred = self.sigmoid(linear)
-
             loss = self.binary_cross_entropy(y, y_pred)
             if abs(prev_loss - loss) < self.tol:
                 break
             prev_loss = loss
-
-            dw = (1/self.m) * np.dot(X.T, (y_pred - y))
-            db = (1/self.m) * np.sum(y_pred - y)
-
+            dw = (1/m) * (X.T @ (y_pred - y))
+            db = (1/m) * np.sum(y_pred - y)
             self.weights -= self.lr * dw
             self.bias -= self.lr * db
 
     def predict(self, X):
-        linear = np.dot(X, self.weights) + self.bias
+        linear = X @ self.weights + self.bias
         return (self.sigmoid(linear) >= 0.5).astype(int)
 
 if __name__ == "__main__":
-    # Dataset with exactly 5 features and 5 informative features
     X, y = make_classification(
         n_samples=600,
         n_features=5,
@@ -48,11 +52,9 @@ if __name__ == "__main__":
         n_redundant=0,
         random_state=42
     )
-
-    model = LogisticRegressionScratch(lr=0.05, epochs=8000)
+    model = LogisticRegressionScratch()
     model.fit(X, y)
-
+    preds = model.predict(X)
     print("Weights:", model.weights)
     print("Bias:", model.bias)
-    preds = model.predict(X)
     print("Accuracy:", np.mean(preds == y))
